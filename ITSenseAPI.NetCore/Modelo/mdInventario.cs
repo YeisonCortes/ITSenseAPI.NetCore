@@ -8,6 +8,7 @@ namespace ITSenseAPI.NetCore.Modelo
 {
     public class mdInventario
     {
+
         [Key]
         public int inCod { get; set; }
 
