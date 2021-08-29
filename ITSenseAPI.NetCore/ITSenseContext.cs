@@ -14,8 +14,11 @@ namespace ITSenseAPI.NetCore
 
         }
 
+
         public DbSet<Movimientos> Movimientos { get; set; }
 
         public DbSet<mdInventario> Inventario { get; set; }
+        public DbSet<mdBodegas> Bodegas { get; set; }
+        public DbSet<mdEstados> Estados { get; set; }
     }
 }
