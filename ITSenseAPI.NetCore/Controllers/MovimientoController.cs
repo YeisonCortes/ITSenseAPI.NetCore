@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ITSenseAPI.NetCore;
 using ITSenseAPI.NetCore.Modelo;
+using Microsoft.Data.SqlClient;
 
 namespace ITSenseAPI.NetCore.Controllers
 {
@@ -25,7 +26,7 @@ namespace ITSenseAPI.NetCore.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Movimientos>>> GetMovimientos()
         {
-            return await _context.Movimientos.ToListAsync();
+            return await _context.Movimientos.Include(x => x.Producto).Include(c => c.Clase).ToListAsync();
         }
 
         // GET: api/Movimiento/5
@@ -80,6 +81,18 @@ namespace ITSenseAPI.NetCore.Controllers
         {
             _context.Movimientos.Add(movimientos);
             await _context.SaveChangesAsync();
+
+            // Llamar a StoreProcedure para sumar o restar con base al movimiento
+            SqlConnection conn = (SqlConnection)_context.Database.GetDbConnection();
+            SqlCommand cmd = conn.CreateCommand();
+            conn.Open();
+            cmd.CommandType = System.Data.CommandType.StoredProcedure;
+            cmd.CommandText = "sp_Movimiento";
+            cmd.Parameters.Add("@codProducto", System.Data.SqlDbType.Int).Value = movimientos.moProducto;
+            cmd.Parameters.Add("@codClase", System.Data.SqlDbType.Int).Value = movimientos.moClaseMvto;
+            cmd.Parameters.Add("@cantidad", System.Data.SqlDbType.Int).Value = movimientos.moCantidad;
+            cmd.ExecuteNonQuery();
+            conn.Close();
 
             return CreatedAtAction("GetMovimientos", new { id = movimientos.moCod }, movimientos);
         }

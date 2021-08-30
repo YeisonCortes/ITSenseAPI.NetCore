@@ -23,9 +23,17 @@ namespace ITSenseAPI.NetCore.Controllers
 
         // GET: api/Inventario
         [HttpGet]
+        [Route("ruta1")]
         public async Task<ActionResult<IEnumerable<mdInventario>>> GetmdInventario()
         {
             return await _context.Inventario.Include(x => x.Bodega).Include(e => e.Estado).ToListAsync();
+        }
+
+        [HttpGet]
+        [Route("ruta2")]
+        public async Task<ActionResult<IEnumerable<mdInventario>>> InventarioLigt()
+        {
+            return await _context.Inventario.ToListAsync();
         }
 
         // GET: api/Inventario/5
